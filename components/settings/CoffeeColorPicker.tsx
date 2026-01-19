@@ -13,15 +13,14 @@ const COFFEE_SCHEMES = {
 
 type CoffeeScheme = keyof typeof COFFEE_SCHEMES;
 
-// Accent wheel: Coffee hue range (browns, tans, ambers)
-const ACCENT_HUE_MIN = 15;
-const ACCENT_HUE_MAX = 55;
+// Accent wheel: Extended range including whites, light tans, browns, ambers
+const ACCENT_HUE_MIN = 20;
+const ACCENT_HUE_MAX = 50;
 const ACCENT_HUE_RANGE = ACCENT_HUE_MAX - ACCENT_HUE_MIN;
 
-// Background wheel: Dark roast range (blacks, dark browns, creams, greys)
-// This uses a wider range with lower saturation for backgrounds
-const BG_HUE_MIN = 0;
-const BG_HUE_MAX = 60;
+// Background wheel: Extended to include creams, light browns, tans
+const BG_HUE_MIN = 15;
+const BG_HUE_MAX = 55;
 const BG_HUE_RANGE = BG_HUE_MAX - BG_HUE_MIN;
 
 // Map wheel angle to hue range
@@ -178,19 +177,24 @@ function ColorWheel({
   };
 
   // Generate gradient stops for wheel
+  // Accent wheel: browns → tans → cream → white → light tan → back to browns
+  // Background wheel: dark browns → browns → tans → cream → light beige → back
   const gradientStops = isDark
-    ? `hsl(${hueMin}, 15%, 8%),
-       hsl(${hueMin + hueRange * 0.25}, 20%, 12%),
-       hsl(${hueMin + hueRange * 0.5}, 25%, 18%),
-       hsl(${hueMin + hueRange * 0.75}, 15%, 25%),
-       hsl(${hueMax}, 10%, 35%),
-       hsl(${hueMin}, 15%, 8%)`
-    : `hsl(${hueMin}, ${displaySat}%, ${displayLight}%),
-       hsl(${hueMin + hueRange * 0.25}, ${displaySat}%, ${displayLight}%),
-       hsl(${hueMin + hueRange * 0.5}, ${displaySat}%, ${displayLight}%),
-       hsl(${hueMin + hueRange * 0.75}, ${displaySat}%, ${displayLight}%),
+    ? `hsl(${hueMin}, 20%, 6%),
+       hsl(${hueMin + hueRange * 0.15}, 25%, 12%),
+       hsl(${hueMin + hueRange * 0.3}, 30%, 20%),
+       hsl(${hueMin + hueRange * 0.45}, 25%, 35%),
+       hsl(${hueMin + hueRange * 0.6}, 20%, 50%),
+       hsl(${hueMin + hueRange * 0.75}, 15%, 65%),
+       hsl(${hueMax}, 12%, 78%),
+       hsl(${hueMin}, 20%, 6%)`
+    : `hsl(${hueMin}, ${displaySat}%, ${Math.max(30, displayLight - 20)}%),
+       hsl(${hueMin + hueRange * 0.2}, ${displaySat}%, ${displayLight}%),
+       hsl(${hueMin + hueRange * 0.4}, ${Math.max(20, displaySat - 15)}%, ${Math.min(85, displayLight + 15)}%),
+       hsl(${hueMin + hueRange * 0.6}, ${Math.max(10, displaySat - 30)}%, ${Math.min(92, displayLight + 25)}%),
+       hsl(${hueMin + hueRange * 0.8}, ${Math.max(5, displaySat - 40)}%, ${Math.min(96, displayLight + 32)}%),
        hsl(${hueMax}, ${displaySat}%, ${displayLight}%),
-       hsl(${hueMin}, ${displaySat}%, ${displayLight}%)`;
+       hsl(${hueMin}, ${displaySat}%, ${Math.max(30, displayLight - 20)}%)`;
 
   return (
     <div className="flex flex-col items-center">
@@ -305,6 +309,26 @@ export function CoffeeColorPicker() {
   const [lightness, setLightness] = useState(DEFAULT_THEME.lightness);
   const [selectedScheme, setSelectedScheme] = useState<CoffeeScheme>(DEFAULT_THEME.scheme);
 
+  // Responsive wheel size
+  const [wheelSize, setWheelSize] = useState(130);
+
+  useEffect(() => {
+    const updateSize = () => {
+      // Larger wheels on bigger screens
+      const width = window.innerWidth;
+      if (width >= 640) {
+        setWheelSize(150);
+      } else if (width >= 400) {
+        setWheelSize(130);
+      } else {
+        setWheelSize(110);
+      }
+    };
+    updateSize();
+    window.addEventListener("resize", updateSize);
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
+
   // Load saved theme on mount
   useEffect(() => {
     try {
@@ -378,13 +402,11 @@ export function CoffeeColorPicker() {
     setSelectedScheme(DEFAULT_THEME.scheme);
   };
 
-  const wheelSize = 140;
-
   return (
     <div className="space-y-6">
-      {/* Dual Color Wheels */}
-      <div className="flex justify-center gap-4">
-        {/* Accent Wheel */}
+      {/* Dual Color Wheels - responsive layout */}
+      <div className="flex justify-between items-start">
+        {/* Accent Wheel - Left */}
         <div className="flex flex-col items-center">
           <ColorWheel
             size={wheelSize}
@@ -400,14 +422,14 @@ export function CoffeeColorPicker() {
           />
           <button
             onClick={randomizeAccent}
-            className="mt-2 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-accent/10 hover:bg-accent/20 text-accent transition-colors"
+            className="mt-3 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-accent/10 hover:bg-accent/20 text-accent transition-colors"
           >
             <ShuffleIcon className="w-3.5 h-3.5" />
             Random
           </button>
         </div>
 
-        {/* Background Wheel */}
+        {/* Background Wheel - Right */}
         <div className="flex flex-col items-center">
           <ColorWheel
             size={wheelSize}
@@ -424,7 +446,7 @@ export function CoffeeColorPicker() {
           />
           <button
             onClick={randomizeBackground}
-            className="mt-2 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-muted hover:bg-muted/80 text-muted-foreground transition-colors"
+            className="mt-3 flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-muted hover:bg-muted/80 text-muted-foreground transition-colors"
           >
             <ShuffleIcon className="w-3.5 h-3.5" />
             Random
