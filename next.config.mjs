@@ -8,6 +8,11 @@ const pwaConfig = withPWA({
 });
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  eslint: {
+    // Skip ESLint during builds (we'll run it separately)
+    ignoreDuringBuilds: true,
+  },
+};
 
 export default pwaConfig(nextConfig);

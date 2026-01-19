@@ -18,7 +18,21 @@
       "Bash(ls:*)",
       "Bash(curl:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(gsutil cors set:*)",
+      "Bash(gcloud auth:*)",
+      "Bash(gsutil ls:*)",
+      "Bash(gcloud config set:*)",
+      "Bash(pgrep:*)",
+      "Bash(git push:*)",
+      "Bash(gh --version:*)",
+      "Bash(sudo apt-get update:*)",
+      "Bash(sudo apt-get install:*)",
+      "Bash(snap list:*)",
+      "Bash(git remote add:*)"
     ]
   }
 }
