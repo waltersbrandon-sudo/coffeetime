@@ -1,0 +1,34 @@
+
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark background -->
+  <rect width="512" height="512" fill="#0A0A0B"/>
+
+  <!-- Coffee cup body -->
+  <path d="
+    M 140.8 179.2
+    L 159.23200000000003 384
+    Q 159.23200000000003 409.6 186.88000000000002 409.6
+    L 325.12 409.6
+    Q 352.76800000000003 409.6 352.76800000000003 384
+    L 371.20000000000005 179.2
+    Z
+  " fill="#D4A574"/>
+
+  <!-- Cup rim highlight -->
+  <rect x="140.8" y="179.2" width="230.4" height="15.36" rx="5.12" fill="#E8C9A0"/>
+
+  <!-- Handle -->
+  <path d="
+    M 371.20000000000005 220.16
+    Q 432.64000000000004 220.16 432.64000000000004 281.6
+    Q 432.64000000000004 343.04 371.20000000000005 343.04
+  " stroke="#D4A574" stroke-width="20.48" fill="none" stroke-linecap="round"/>
+
+  <!-- Steam lines -->
+  <path d="M 194.56 160.768 Q 184.32 130.048 194.56 105.472"
+        stroke="#D4A574" stroke-width="7.68" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <path d="M 256 148.48 Q 266.24 117.75999999999999 256 93.184"
+        stroke="#D4A574" stroke-width="7.68" fill="none" stroke-linecap="round" opacity="0.7"/>
+  <path d="M 317.44 160.768 Q 327.68 130.048 317.44 105.472"
+        stroke="#D4A574" stroke-width="7.68" fill="none" stroke-linecap="round" opacity="0.6"/>
+</svg>

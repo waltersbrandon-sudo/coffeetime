@@ -1,0 +1,212 @@
+{
+  "grinders": {
+    "catalog-grinder-baratza-encore-esp": {
+      "officialUrl": "https://baratza.com/wp-content/uploads/2022/01/encore-esp-black.png",
+      "fallbackSearch": "Baratza Encore ESP grinder"
+    },
+    "catalog-grinder-baratza-virtuoso-": {
+      "officialUrl": "https://baratza.com/wp-content/uploads/2018/02/virtuoso-plus-black.png",
+      "fallbackSearch": "Baratza Virtuoso+ grinder"
+    },
+    "catalog-grinder-baratza-sette-30": {
+      "officialUrl": "https://baratza.com/wp-content/uploads/2018/02/sette-30-black.png",
+      "fallbackSearch": "Baratza Sette 30 grinder"
+    },
+    "catalog-grinder-baratza-sette-270": {
+      "officialUrl": "https://baratza.com/wp-content/uploads/2018/02/sette-270-black.png",
+      "fallbackSearch": "Baratza Sette 270 grinder"
+    },
+    "catalog-grinder-baratza-sette-270wi": {
+      "officialUrl": "https://baratza.com/wp-content/uploads/2018/02/sette-270wi-black.png",
+      "fallbackSearch": "Baratza Sette 270Wi grinder"
+    },
+    "catalog-grinder-baratza-vario-": {
+      "officialUrl": "https://baratza.com/wp-content/uploads/2022/01/vario-plus-black.png",
+      "fallbackSearch": "Baratza Vario+ grinder"
+    },
+    "catalog-grinder-baratza-forte-ap": {
+      "officialUrl": "https://baratza.com/wp-content/uploads/2018/02/forte-ap-black.png",
+      "fallbackSearch": "Baratza Forte AP grinder"
+    },
+    "catalog-grinder-fellow-ode-brew-grinder-gen-2": {
+      "officialUrl": "https://cdn.shopify.com/s/files/1/0057/6270/0560/products/Fellow-Ode-Gen2-Black.png",
+      "fallbackSearch": "Fellow Ode Gen 2 grinder"
+    },
+    "catalog-grinder-fellow-opus": {
+      "officialUrl": "https://cdn.shopify.com/s/files/1/0057/6270/0560/products/Fellow-Opus-Black.png",
+      "fallbackSearch": "Fellow Opus grinder"
+    },
+    "catalog-grinder-eureka-mignon-specialita": {
+      "officialUrl": "https://www.eureka.co.it/images/products/mignon-specialita.png",
+      "fallbackSearch": "Eureka Mignon Specialita grinder"
+    },
+    "catalog-grinder-eureka-mignon-zero": {
+      "officialUrl": "https://www.eureka.co.it/images/products/mignon-zero.png",
+      "fallbackSearch": "Eureka Mignon Zero grinder"
+    },
+    "catalog-grinder-niche-zero": {
+      "officialUrl": "https://www.nichecoffee.co.uk/cdn/shop/products/niche-zero-white.png",
+      "fallbackSearch": "Niche Zero grinder"
+    },
+    "catalog-grinder-comandante-c40-mk4": {
+      "officialUrl": "https://comandantegrinder.com/media/c40-mk4-nitro-blade.png",
+      "fallbackSearch": "Comandante C40 MK4 grinder"
+    },
+    "catalog-grinder-1zpresso-k-ultra": {
+      "officialUrl": "https://1zpresso.coffee/wp-content/uploads/2023/01/k-ultra.png",
+      "fallbackSearch": "1Zpresso K-Ultra grinder"
+    },
+    "catalog-grinder-1zpresso-j-ultra": {
+      "officialUrl": "https://1zpresso.coffee/wp-content/uploads/2023/01/j-ultra.png",
+      "fallbackSearch": "1Zpresso J-Ultra grinder"
+    },
+    "catalog-grinder-1zpresso-k-max": {
+      "officialUrl": "https://1zpresso.coffee/wp-content/uploads/2023/01/k-max.png",
+      "fallbackSearch": "1Zpresso K-Max grinder"
+    },
+    "catalog-grinder-1zpresso-q2-s": {
+      "officialUrl": "https://1zpresso.coffee/wp-content/uploads/2023/01/q2s.png",
+      "fallbackSearch": "1Zpresso Q2 S grinder"
+    },
+    "catalog-grinder-timemore-chestnut-c3": {
+      "officialUrl": "https://cdn.shopify.com/s/files/1/0555/5755/5099/products/timemore-c3.png",
+      "fallbackSearch": "Timemore Chestnut C3 grinder"
+    },
+    "catalog-grinder-timemore-chestnut-c3s": {
+      "officialUrl": "https://cdn.shopify.com/s/files/1/0555/5755/5099/products/timemore-c3s.png",
+      "fallbackSearch": "Timemore Chestnut C3S grinder"
+    },
+    "catalog-grinder-kinu-m47-phoenix": {
+      "officialUrl": "https://kinugrinders.com/images/m47-phoenix.png",
+      "fallbackSearch": "Kinu M47 Phoenix grinder"
+    }
+  },
+  "brewers": {
+    "catalog-brewer-hario-v60-02": {
+      "officialUrl": "https://cdn.hario.jp/item/VDC-02R.png",
+      "fallbackSearch": "Hario V60 02 ceramic dripper"
+    },
+    "catalog-brewer-hario-v60-01": {
+      "officialUrl": "https://cdn.hario.jp/item/VD-01T.png",
+      "fallbackSearch": "Hario V60 01 plastic dripper"
+    },
+    "catalog-brewer-hario-v60-03": {
+      "officialUrl": "https://cdn.hario.jp/item/VDG-03B.png",
+      "fallbackSearch": "Hario V60 03 glass dripper"
+    },
+    "catalog-brewer-hario-v60-copper": {
+      "officialUrl": "https://cdn.hario.jp/item/VDP-02CP.png",
+      "fallbackSearch": "Hario V60 Copper dripper"
+    },
+    "catalog-brewer-hario-mugen-one-pour-": {
+      "officialUrl": "https://cdn.hario.jp/item/VDMU-02-TB.png",
+      "fallbackSearch": "Hario Mugen dripper"
+    },
+    "catalog-brewer-hario-switch-immersion-dripper": {
+      "officialUrl": "https://cdn.hario.jp/item/SSD-200-B.png",
+      "fallbackSearch": "Hario Switch Immersion Dripper"
+    },
+    "catalog-brewer-hario-woodneck-nel-drip-3-4-cup-": {
+      "officialUrl": "https://cdn.hario.jp/item/DPW-3.png",
+      "fallbackSearch": "Hario Woodneck Nel Drip"
+    },
+    "catalog-brewer-chemex-classic-6-cup": {
+      "officialUrl": "https://www.chemexcoffeemaker.com/media/catalog/product/c/m/cm-6a.png",
+      "fallbackSearch": "Chemex Classic 6 Cup"
+    },
+    "catalog-brewer-chemex-classic-8-cup": {
+      "officialUrl": "https://www.chemexcoffeemaker.com/media/catalog/product/c/m/cm-8a.png",
+      "fallbackSearch": "Chemex Classic 8 Cup"
+    },
+    "catalog-brewer-chemex-classic-3-cup": {
+      "officialUrl": "https://www.chemexcoffeemaker.com/media/catalog/product/c/m/cm-3a.png",
+      "fallbackSearch": "Chemex Classic 3 Cup"
+    },
+    "catalog-brewer-kalita-wave-185": {
+      "officialUrl": "https://kalita.co.jp/images/products/wave-185.png",
+      "fallbackSearch": "Kalita Wave 185 dripper"
+    },
+    "catalog-brewer-kalita-wave-155": {
+      "officialUrl": "https://kalita.co.jp/images/products/wave-155.png",
+      "fallbackSearch": "Kalita Wave 155 dripper"
+    },
+    "catalog-brewer-origami-dripper-m": {
+      "officialUrl": "https://origami-kai.com/cdn/shop/products/origami-dripper-m.png",
+      "fallbackSearch": "Origami Dripper M ceramic"
+    },
+    "catalog-brewer-aeropress-aeropress-original": {
+      "officialUrl": "https://aeropress.com/cdn/shop/products/aeropress-original.png",
+      "fallbackSearch": "AeroPress Original"
+    },
+    "catalog-brewer-aeropress-aeropress-go": {
+      "officialUrl": "https://aeropress.com/cdn/shop/products/aeropress-go.png",
+      "fallbackSearch": "AeroPress Go"
+    },
+    "catalog-brewer-aeropress-aeropress-xl": {
+      "officialUrl": "https://aeropress.com/cdn/shop/products/aeropress-xl.png",
+      "fallbackSearch": "AeroPress XL"
+    },
+    "catalog-brewer-aeropress-aeropress-clear": {
+      "officialUrl": "https://aeropress.com/cdn/shop/products/aeropress-clear.png",
+      "fallbackSearch": "AeroPress Clear"
+    },
+    "catalog-brewer-clever-clever-dripper-large": {
+      "officialUrl": "https://clevercoffeedripper.com/images/clever-dripper-large.png",
+      "fallbackSearch": "Clever Dripper Large"
+    },
+    "catalog-brewer-fellow-stagg-x-dripper": {
+      "officialUrl": "https://cdn.shopify.com/s/files/1/0057/6270/0560/products/Fellow-Stagg-X.png",
+      "fallbackSearch": "Fellow Stagg X Dripper"
+    },
+    "catalog-brewer-bodum-chambord-8-cup": {
+      "officialUrl": "https://www.bodum.com/media/catalog/product/1/9/1928-16us4.png",
+      "fallbackSearch": "Bodum Chambord French Press"
+    },
+    "catalog-brewer-bialetti-moka-express-6-cup": {
+      "officialUrl": "https://www.bialetti.com/media/catalog/product/0/0/0001163.png",
+      "fallbackSearch": "Bialetti Moka Express 6 Cup"
+    }
+  },
+  "coffees": {
+    "catalog-coffee-stumptown-hair-bender": {
+      "officialUrl": "https://www.stumptowncoffee.com/cdn/shop/products/hair-bender.png",
+      "fallbackSearch": "Stumptown Hair Bender coffee bag"
+    },
+    "catalog-coffee-stumptown-holler-mountain": {
+      "officialUrl": "https://www.stumptowncoffee.com/cdn/shop/products/holler-mountain.png",
+      "fallbackSearch": "Stumptown Holler Mountain coffee bag"
+    },
+    "catalog-coffee-blue-bottle-three-africas": {
+      "officialUrl": "https://bluebottlecoffee.com/cdn/shop/products/three-africas.png",
+      "fallbackSearch": "Blue Bottle Three Africas coffee bag"
+    },
+    "catalog-coffee-blue-bottle-giant-steps": {
+      "officialUrl": "https://bluebottlecoffee.com/cdn/shop/products/giant-steps.png",
+      "fallbackSearch": "Blue Bottle Giant Steps coffee bag"
+    },
+    "catalog-coffee-blue-bottle-bella-donovan": {
+      "officialUrl": "https://bluebottlecoffee.com/cdn/shop/products/bella-donovan.png",
+      "fallbackSearch": "Blue Bottle Bella Donovan coffee bag"
+    },
+    "catalog-coffee-think-coffee-devoe-blend": {
+      "officialUrl": "https://thinkcoffee.com/cdn/shop/products/devoe-blend.png",
+      "fallbackSearch": "Think Coffee Devoe Blend bag"
+    },
+    "catalog-coffee-kirkland-signature-colombian-supremo": {
+      "officialUrl": "https://images.costco-static.com/ImageDelivery/colombian-supremo.png",
+      "fallbackSearch": "Kirkland Signature Colombian Supremo"
+    },
+    "catalog-coffee-peet-s-coffee-major-dickason-s-blend": {
+      "officialUrl": "https://www.peets.com/cdn/shop/products/major-dickasons.png",
+      "fallbackSearch": "Peet's Major Dickason's Blend"
+    },
+    "catalog-coffee-lavazza-qualit-oro": {
+      "officialUrl": "https://www.lavazza.com/content/dam/lavazza/products/qualita-oro.png",
+      "fallbackSearch": "Lavazza Qualita Oro coffee"
+    },
+    "catalog-coffee-starbucks-pike-place-roast": {
+      "officialUrl": "https://www.starbucks.com/starbucks-rewards/images/pike-place.png",
+      "fallbackSearch": "Starbucks Pike Place Roast"
+    }
+  }
+}

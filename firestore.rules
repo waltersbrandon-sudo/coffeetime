@@ -1,0 +1,162 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return isAuth() && request.auth.uid == userId;
+    }
+
+    // ===============================
+    // PUBLIC BREWS (Share Individual Brews)
+    // ===============================
+    match /publicBrews/{shareId} {
+      // Anyone can read public brews (no auth required)
+      allow read: if true;
+
+      // Only authenticated users can create, and only for their own brews
+      allow create: if isAuth()
+        && request.resource.data.ownerUserId == request.auth.uid;
+
+      // Only the owner can update or delete their shared brews
+      allow update, delete: if isAuth()
+        && resource.data.ownerUserId == request.auth.uid;
+    }
+
+    // ===============================
+    // USER PROFILES & DATA
+    // ===============================
+    match /users/{userId} {
+      // Any authenticated user can read user profiles
+      // (needed for following feature - to look up profile codes)
+      allow read: if isAuth();
+
+      // Users can only write to their own profile
+      allow write: if isOwner(userId);
+
+      // ----- FOLLOWERS -----
+      match /followers/{followerId} {
+        // User can read their own followers list
+        allow read: if isOwner(userId);
+
+        // A user can add/remove themselves as a follower of another user
+        allow create, delete: if isAuth() && request.auth.uid == followerId;
+      }
+
+      // ----- FOLLOWING -----
+      match /following/{followedId} {
+        // Users can only read/write their own following list
+        allow read, write: if isOwner(userId);
+      }
+
+      // ----- BREW LOGS -----
+      match /brewLogs/{brewId} {
+        // Owner can always read/write their own brew logs
+        allow read, write: if isOwner(userId);
+
+        // Followers can read if the user has isPublic = true
+        // AND the reader is in the followers list
+        allow read: if isAuth()
+          && get(/databases/$(database)/documents/users/$(userId)).data.isPublic == true
+          && exists(/databases/$(database)/documents/users/$(userId)/followers/$(request.auth.uid));
+      }
+
+      // ----- CIRCLE MEMBERSHIPS -----
+      match /circleMembers/{circleId} {
+        // Users can only read/write their own circle memberships
+        allow read, write: if isOwner(userId);
+      }
+
+      // ----- COFFEES -----
+      match /coffees/{coffeeId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // ----- GRINDERS -----
+      match /grinders/{grinderId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // ----- BREWERS -----
+      match /brewers/{brewerId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // ----- SETTINGS -----
+      match /settings/{settingId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // ----- EQUIPMENT STATS -----
+      match /equipmentStats/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // ===============================
+    // CIRCLES (Collaborative Groups)
+    // ===============================
+    match /circles/{circleId} {
+      // Helper to check if user is a member of this circle
+      function isMember() {
+        return isAuth()
+          && exists(/databases/$(database)/documents/circles/$(circleId)/members/$(request.auth.uid));
+      }
+
+      // Helper to check if user is an admin of this circle
+      function isAdmin() {
+        return isAuth()
+          && get(/databases/$(database)/documents/circles/$(circleId)/members/$(request.auth.uid)).data.role == "admin";
+      }
+
+      // Helper to check if user can post (admin or contributor)
+      function canPost() {
+        return isAuth()
+          && get(/databases/$(database)/documents/circles/$(circleId)/members/$(request.auth.uid)).data.role in ["admin", "contributor"];
+      }
+
+      // Members can read circle info
+      allow read: if isMember();
+
+      // Any authenticated user can create a circle
+      allow create: if isAuth();
+
+      // Only admins can update or delete the circle
+      allow update, delete: if isAdmin();
+
+      // ----- CIRCLE MEMBERS -----
+      match /members/{memberId} {
+        // Members can read the members list
+        allow read: if isMember();
+
+        // Users can add themselves as members (join)
+        allow create: if isAuth() && request.auth.uid == memberId;
+
+        // Users can remove themselves, or admins can remove anyone
+        allow delete: if isAuth()
+          && (request.auth.uid == memberId || isAdmin());
+
+        // Only admins can update member roles
+        allow update: if isAdmin();
+      }
+
+      // ----- CIRCLE BREWS -----
+      match /brews/{brewId} {
+        // Members can read circle brews
+        allow read: if isMember();
+
+        // Admins and contributors can create brews
+        allow create: if canPost();
+
+        // Users can update/delete their own brews, or admins can delete any
+        allow update, delete: if isAuth()
+          && (resource.data.postedBy == request.auth.uid || isAdmin());
+      }
+    }
+  }
+}
