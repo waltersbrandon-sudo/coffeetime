@@ -8,6 +8,7 @@ import { signOutUser } from "@/lib/firebase/auth";
 import { useCurrentUserProfile } from "@/lib/hooks/useUserProfile";
 import { useToast } from "@/hooks/use-toast";
 import { InstallButton } from "@/components/pwa/InstallButton";
+import { CoffeeColorPicker } from "@/components/settings/CoffeeColorPicker";
 
 function ChevronRightIcon({ className }: { className?: string }) {
   return (
@@ -93,6 +94,26 @@ function SparklesIcon({ className }: { className?: string }) {
       <path d="M19 17v4" />
       <path d="M3 5h4" />
       <path d="M17 19h4" />
+    </svg>
+  );
+}
+
+function PaletteIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+      <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+      <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+      <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z" />
     </svg>
   );
 }
@@ -248,6 +269,20 @@ export default function SettingsPage() {
           App
         </h2>
         <InstallButton />
+      </section>
+
+      {/* Appearance Section */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold text-muted-foreground flex items-center gap-2">
+          <PaletteIcon className="w-5 h-5" />
+          Appearance
+        </h2>
+        <div className="p-4 rounded-lg bg-card border border-border">
+          <p className="text-sm text-muted-foreground mb-4">
+            Customize your app colors with coffee-inspired shades
+          </p>
+          <CoffeeColorPicker />
+        </div>
       </section>
 
       {/* AI Section */}

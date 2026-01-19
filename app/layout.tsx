@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/context/AuthContext";
 import { Toaster } from "@/components/ui/toaster";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { ThemeInitializer } from "@/components/settings/ThemeInitializer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,6 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased bg-background text-foreground`}>
+        <ThemeInitializer />
         <AuthProvider>{children}</AuthProvider>
         <Toaster />
         <InstallPrompt />

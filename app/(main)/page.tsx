@@ -623,27 +623,24 @@ export default function LogPage() {
   };
 
   return (
-    <main className="min-h-screen pb-24">
+    <main className="min-h-screen pb-20">
       {/* Header */}
       <header className="p-6 pb-4">
         <div className="space-y-2">
-          {/* Title row with Quick Add button next to it */}
-          <div className="flex items-center gap-3">
+          {/* Title row with Quick Add and Save buttons */}
+          <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold">Log Brew</h1>
 
-            {/* AI Quick Log Button with instruction box */}
-            <div className="bg-sky-100 dark:bg-sky-900/30 border-2 border-sky-300 dark:border-sky-700 rounded-xl px-3 py-2 flex items-center gap-2">
-              <span className="text-xs font-semibold text-sky-700 dark:text-sky-300 whitespace-nowrap">
-                Quick Add
-              </span>
+            <div className="flex items-center gap-2">
+              {/* AI Quick Log Button */}
               <button
                 type="button"
                 onClick={() => setIsAIMenuOpen(true)}
-                className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+                className="relative flex items-center gap-2 px-3 py-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 active:scale-95 transition-all duration-200"
                 title="Quick Log with AI"
               >
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -653,10 +650,43 @@ export default function LogPage() {
                 >
                   <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                 </svg>
-                <span className="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-purple-600 text-[8px] font-bold shadow">
-                  AI
-                </span>
+                <span className="text-sm font-medium">Quick Add</span>
               </button>
+
+              {/* Save Brew Button */}
+              <Button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-4 py-2 h-auto"
+              >
+                {saving ? (
+                  <span className="flex items-center gap-2">
+                    <svg
+                      className="animate-spin h-4 w-4"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Saving
+                  </span>
+                ) : (
+                  "Save"
+                )}
+              </Button>
             </div>
           </div>
 
@@ -994,42 +1024,6 @@ export default function LogPage() {
         </CollapsibleSection>
       </div>
 
-      {/* Fixed Save Button */}
-      <div className="fixed bottom-16 left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent">
-        <Button
-          onClick={handleSave}
-          disabled={saving}
-          className="w-full h-12 text-base font-medium"
-        >
-          {saving ? (
-            <span className="flex items-center gap-2">
-              <svg
-                className="animate-spin h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Saving...
-            </span>
-          ) : (
-            "Save Brew"
-          )}
-        </Button>
-      </div>
 
       {/* AI Dialogs */}
       {/* AI Quick Log Menu */}
