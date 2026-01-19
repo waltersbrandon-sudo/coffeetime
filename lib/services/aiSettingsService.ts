@@ -7,8 +7,6 @@ import {
 import { db } from "@/lib/firebase/config";
 import { LLMProvider } from "@/lib/types/llm";
 
-export type ImageProvider = "google" | "openai";
-
 export interface AISettings {
   selectedProvider: LLMProvider;
   selectedModelId: string;
@@ -17,13 +15,8 @@ export interface AISettings {
     anthropic?: string;
     openai?: string;
   };
-  // Image generation settings
-  imageUseTextSettings: boolean; // When true, uses text provider's settings for images
-  imageProvider: ImageProvider;
-  imageApiKeys: {
-    google?: string;
-    openai?: string;
-  };
+  // Image search settings (Search & Select pipeline)
+  googleCseId?: string; // Google Custom Search Engine ID
   updatedAt?: any;
 }
 
@@ -31,9 +24,7 @@ const DEFAULT_SETTINGS: AISettings = {
   selectedProvider: "gemini",
   selectedModelId: "gemini-3-flash-preview",
   apiKeys: {},
-  imageUseTextSettings: true,
-  imageProvider: "google",
-  imageApiKeys: {},
+  googleCseId: "056a1192ca9c74fac", // Default CoffeeTime product image search engine
 };
 
 function getSettingsDoc(userId: string) {
@@ -126,27 +117,3 @@ export async function selectModel(
   );
 }
 
-/**
- * Gets the effective image generation settings.
- * If imageUseTextSettings is true, maps text provider to image provider.
- */
-export function getEffectiveImageSettings(settings: AISettings): {
-  provider: ImageProvider;
-  apiKey: string | undefined;
-} {
-  if (settings.imageUseTextSettings) {
-    // Map text provider to image provider
-    // Gemini -> Google, OpenAI -> OpenAI, Anthropic -> Google (as fallback since Anthropic doesn't have image gen)
-    const provider: ImageProvider = settings.selectedProvider === "openai" ? "openai" : "google";
-    const apiKey = provider === "google"
-      ? settings.apiKeys.gemini
-      : settings.apiKeys.openai;
-    return { provider, apiKey };
-  } else {
-    // Use dedicated image settings
-    const apiKey = settings.imageProvider === "google"
-      ? settings.imageApiKeys.google
-      : settings.imageApiKeys.openai;
-    return { provider: settings.imageProvider, apiKey };
-  }
-}

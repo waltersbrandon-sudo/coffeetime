@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Icons
 function CoffeeIcon({ className }: { className?: string }) {
@@ -120,6 +120,14 @@ export function EquipmentPhoto({
   // Prefer thumbnailURL over photoURL for display
   const displayURL = thumbnailURL || photoURL;
   const showFallback = !displayURL || imageError;
+
+  // Reset loading/error states when the URL changes
+  useEffect(() => {
+    if (displayURL) {
+      setImageError(false);
+      setImageLoading(true);
+    }
+  }, [displayURL]);
 
   const FallbackIcon = {
     coffee: CoffeeIcon,

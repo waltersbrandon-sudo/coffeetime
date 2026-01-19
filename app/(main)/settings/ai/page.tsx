@@ -18,7 +18,6 @@ import {
   getAISettings,
   updateAISettings,
   AISettings,
-  ImageProvider,
 } from "@/lib/services/aiSettingsService";
 import {
   llmCatalog,
@@ -147,17 +146,8 @@ export default function AISettingsPage() {
     openai: false,
   });
 
-  // Image generation settings
-  const [imageUseTextSettings, setImageUseTextSettings] = useState(true);
-  const [imageProvider, setImageProvider] = useState<ImageProvider>("google");
-  const [imageApiKeys, setImageApiKeys] = useState<Record<ImageProvider, string>>({
-    google: "",
-    openai: "",
-  });
-  const [showImageKeys, setShowImageKeys] = useState<Record<ImageProvider, boolean>>({
-    google: false,
-    openai: false,
-  });
+  // Image search settings (default CSE provided)
+  const [googleCseId, setGoogleCseId] = useState("056a1192ca9c74fac");
 
   // Load settings
   useEffect(() => {
@@ -174,13 +164,8 @@ export default function AISettingsPage() {
           anthropic: savedSettings.apiKeys.anthropic || "",
           openai: savedSettings.apiKeys.openai || "",
         });
-        // Load image settings
-        setImageUseTextSettings(savedSettings.imageUseTextSettings ?? true);
-        setImageProvider(savedSettings.imageProvider || "google");
-        setImageApiKeys({
-          google: savedSettings.imageApiKeys?.google || "",
-          openai: savedSettings.imageApiKeys?.openai || "",
-        });
+        // Load image search settings (use default if not set)
+        setGoogleCseId(savedSettings.googleCseId || "056a1192ca9c74fac");
       } catch (error) {
         console.error("Failed to load AI settings:", error);
       } finally {
@@ -215,18 +200,11 @@ export default function AISettingsPage() {
       if (apiKeys.anthropic) filteredApiKeys.anthropic = apiKeys.anthropic;
       if (apiKeys.openai) filteredApiKeys.openai = apiKeys.openai;
 
-      // Filter out empty image API keys
-      const filteredImageApiKeys: Record<string, string> = {};
-      if (imageApiKeys.google) filteredImageApiKeys.google = imageApiKeys.google;
-      if (imageApiKeys.openai) filteredImageApiKeys.openai = imageApiKeys.openai;
-
       await updateAISettings(user.uid, {
         selectedProvider,
         selectedModelId,
         apiKeys: filteredApiKeys,
-        imageUseTextSettings,
-        imageProvider,
-        imageApiKeys: filteredImageApiKeys,
+        googleCseId: googleCseId || undefined,
       });
 
       toast({
@@ -249,16 +227,8 @@ export default function AISettingsPage() {
     setShowKeys((prev) => ({ ...prev, [provider]: !prev[provider] }));
   };
 
-  const toggleShowImageKey = (provider: ImageProvider) => {
-    setShowImageKeys((prev) => ({ ...prev, [provider]: !prev[provider] }));
-  };
-
   const hasApiKey = (provider: LLMProvider) => {
     return apiKeys[provider].length > 0;
-  };
-
-  const hasImageApiKey = (provider: ImageProvider) => {
-    return imageApiKeys[provider].length > 0;
   };
 
   if (loading) {
@@ -455,7 +425,7 @@ export default function AISettingsPage() {
         </div>
       </section>
 
-      {/* Image Generation Settings */}
+      {/* Image Search Settings */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <svg
@@ -471,110 +441,65 @@ export default function AISettingsPage() {
             <circle cx="9" cy="9" r="2" />
             <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
           </svg>
-          Image Generation
+          Product Images
         </h2>
         <p className="text-sm text-muted-foreground">
-          Configure AI provider for generating product thumbnails
+          Automatically find real product photos using Google Image Search and AI curation
         </p>
 
-        {/* Same as text checkbox */}
-        <label className="flex items-center gap-3 p-4 rounded-lg border border-border bg-card cursor-pointer hover:bg-card/80 transition-colors">
-          <input
-            type="checkbox"
-            checked={imageUseTextSettings}
-            onChange={(e) => setImageUseTextSettings(e.target.checked)}
-            className="w-5 h-5 rounded border-border bg-background text-purple-500 focus:ring-purple-500 focus:ring-offset-0"
-          />
-          <div>
-            <p className="font-medium">Same as text provider</p>
-            <p className="text-sm text-muted-foreground">
-              {imageUseTextSettings
-                ? `Using ${selectedProvider === "openai" ? "OpenAI DALL-E" : "Google Imagen"} (based on text provider)`
-                : "Use a different provider for image generation"}
-            </p>
-          </div>
-        </label>
-
-        {/* Image provider selection - only show when not using text settings */}
-        {!imageUseTextSettings && (
-          <div className="space-y-4 p-4 rounded-lg border border-purple-500/30 bg-purple-500/5">
-            <div className="space-y-3">
-              <Label>Image Provider</Label>
-              {(["google", "openai"] as ImageProvider[]).map((provider) => (
-                <button
-                  key={provider}
-                  onClick={() => setImageProvider(provider)}
-                  className={`w-full flex items-center gap-4 p-4 rounded-lg border transition-colors text-left ${
-                    imageProvider === provider
-                      ? "border-purple-500 bg-purple-500/10"
-                      : "border-border bg-card hover:bg-card/80"
-                  }`}
-                >
-                  <div
-                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                      imageProvider === provider
-                        ? "bg-purple-500 text-white"
-                        : "bg-muted"
-                    }`}
-                  >
-                    {provider === "google" && <span className="text-lg">G</span>}
-                    {provider === "openai" && <span className="text-lg">O</span>}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium">
-                        {provider === "google" ? "Google Imagen" : "OpenAI DALL-E"}
-                      </p>
-                      {hasImageApiKey(provider) && (
-                        <CheckIcon className="w-4 h-4 text-green-500" />
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {provider === "google"
-                        ? "High-quality photorealistic images via Imagen 3"
-                        : "Creative and artistic images via DALL-E 3"}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            {/* Image API Key */}
-            <div className="space-y-2">
-              <Label htmlFor={`image-apikey-${imageProvider}`}>
-                {imageProvider === "google" ? "Google" : "OpenAI"} API Key for Images
-              </Label>
-              <div className="relative">
-                <Input
-                  id={`image-apikey-${imageProvider}`}
-                  type={showImageKeys[imageProvider] ? "text" : "password"}
-                  value={imageApiKeys[imageProvider]}
-                  onChange={(e) =>
-                    setImageApiKeys((prev) => ({ ...prev, [imageProvider]: e.target.value }))
-                  }
-                  placeholder={`Enter your ${imageProvider === "google" ? "Google" : "OpenAI"} API key`}
-                  className="pr-10"
-                />
+        <div className="p-4 rounded-lg border border-border bg-card space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="google-cse-id">Google Custom Search Engine ID</Label>
+              {googleCseId !== "056a1192ca9c74fac" && (
                 <button
                   type="button"
-                  onClick={() => toggleShowImageKey(imageProvider)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setGoogleCseId("056a1192ca9c74fac")}
+                  className="text-xs text-purple-500 hover:underline"
                 >
-                  {showImageKeys[imageProvider] ? (
-                    <EyeOffIcon className="w-4 h-4" />
-                  ) : (
-                    <EyeIcon className="w-4 h-4" />
-                  )}
+                  Reset to default
                 </button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {imageProvider === "google"
-                  ? "Get your key at ai.google.dev"
-                  : "Get your key at platform.openai.com"}
-              </p>
+              )}
             </div>
+            <Input
+              id="google-cse-id"
+              type="text"
+              value={googleCseId}
+              onChange={(e) => setGoogleCseId(e.target.value)}
+              placeholder="Enter your Search Engine ID"
+            />
+            {googleCseId === "056a1192ca9c74fac" ? (
+              <p className="text-xs text-green-600 flex items-center gap-1">
+                <CheckIcon className="w-3 h-3" />
+                Using default CoffeeTime search engine
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                Using custom search engine. Create one at{" "}
+                <a
+                  href="https://cse.google.com/all"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-500 hover:underline"
+                >
+                  cse.google.com
+                </a>
+              </p>
+            )}
           </div>
-        )}
+
+          <div className="p-3 rounded-lg bg-muted/50 text-sm space-y-2">
+            <p className="font-medium">How it works:</p>
+            <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+              <li>Google searches for product images</li>
+              <li>AI evaluates candidates for quality and accuracy</li>
+              <li>Best matching photo is saved to your library</li>
+            </ol>
+            <p className="text-xs text-muted-foreground mt-2">
+              Uses your Gemini API key for both search and AI evaluation. First 100 searches/day are free.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Model Catalog */}

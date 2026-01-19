@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAISettings, getEffectiveImageSettings } from "@/lib/services/aiSettingsService";
+import { getAISettings } from "@/lib/services/aiSettingsService";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 type ProductType = "coffee" | "grinder" | "brewer";
 
@@ -20,131 +21,171 @@ interface GenerateImageResponse {
 }
 
 /**
- * Build a prompt for generating a product image
+ * Build a search query for finding product images
  */
-function buildProductPrompt(
+function buildSearchQuery(
   productName: string,
   productType: ProductType,
   options?: { brand?: string; model?: string; description?: string }
 ): string {
   const brand = options?.brand;
   const model = options?.model;
-  const description = options?.description;
 
+  const parts: string[] = [];
+
+  if (brand) parts.push(brand);
+  if (model) parts.push(model);
+  parts.push(productName);
+
+  // Add product type context
   switch (productType) {
     case "coffee":
-      return `Professional product photography of a premium coffee bag labeled "${productName}"${brand ? ` from ${brand}` : ""}. Artisanal specialty coffee packaging, elegant design. Pure white background. Soft studio lighting with subtle shadows. High definition, photorealistic. No text overlays.${description ? ` Style hints: ${description}` : ""}`;
-
+      parts.push("coffee bag");
+      break;
     case "grinder":
-      return `Professional product photography of a ${brand ? `${brand} ` : ""}${model ? `${model} ` : ""}${productName} coffee grinder. Complete device shown from 3/4 angle, elegant and modern. Pure white background. Soft studio lighting with subtle shadows. High definition, photorealistic. No text overlays.${description ? ` Details: ${description}` : ""}`;
-
+      parts.push("coffee grinder");
+      break;
     case "brewer":
-      return `Professional product photography of a ${brand ? `${brand} ` : ""}${model ? `${model} ` : ""}${productName} coffee brewer. Complete device shown clearly, elegant design. Pure white background. Soft studio lighting with subtle shadows. High definition, photorealistic. No text overlays.${description ? ` Details: ${description}` : ""}`;
+      parts.push("coffee brewer");
+      break;
   }
+
+  // Add quality hints for better image results
+  parts.push("product photo white background");
+
+  return parts.join(" ");
 }
 
 /**
- * Generate image using Google Imagen 3
+ * Search for candidate images using Google Custom Search API
  */
-async function generateWithGoogle(prompt: string, apiKey: string): Promise<{ imageBase64: string; mimeType: string }> {
-  const IMAGEN_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict";
+async function searchForImages(
+  query: string,
+  apiKey: string,
+  cseId: string,
+  numResults: number = 5
+): Promise<string[]> {
+  const url = new URL("https://www.googleapis.com/customsearch/v1");
+  url.searchParams.set("key", apiKey);
+  url.searchParams.set("cx", cseId);
+  url.searchParams.set("q", query);
+  url.searchParams.set("searchType", "image");
+  url.searchParams.set("imgSize", "large");
+  url.searchParams.set("num", String(numResults));
+  url.searchParams.set("safe", "active");
 
-  const response = await fetch(`${IMAGEN_ENDPOINT}?key=${apiKey}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      instances: [{ prompt }],
-      parameters: {
-        sampleCount: 1,
-        aspectRatio: "1:1",
-        safetyFilterLevel: "block_few",
-        personGeneration: "dont_allow",
+  const response = await fetch(url.toString());
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    console.error("Google CSE error:", error);
+    throw new Error("Failed to search for images");
+  }
+
+  const data = await response.json();
+  const items = data.items || [];
+
+  return items.map((item: { link: string }) => item.link);
+}
+
+/**
+ * Fetch an image and convert to base64
+ */
+async function fetchImageAsBase64(url: string): Promise<{ base64: string; mimeType: string } | null> {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; CoffeeTimeBot/1.0)",
       },
-    }),
-  });
+    });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    console.error("Google Imagen API error:", errorData);
+    if (!response.ok) return null;
 
-    if (response.status === 400) {
-      throw new Error("Unable to generate this image. Try a different product description.");
-    }
-    if (response.status === 429) {
-      throw new Error("Too many requests. Please wait a moment and try again.");
-    }
-    throw new Error("Failed to generate image with Google Imagen.");
+    const contentType = response.headers.get("content-type") || "image/jpeg";
+    if (!contentType.startsWith("image/")) return null;
+
+    const buffer = await response.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString("base64");
+
+    return { base64, mimeType: contentType };
+  } catch {
+    return null;
   }
-
-  const data = await response.json();
-  const predictions = data.predictions;
-
-  if (!predictions || predictions.length === 0) {
-    throw new Error("No image was generated. Try a different description.");
-  }
-
-  const imageData = predictions[0];
-  const imageBase64 = imageData.bytesBase64Encoded;
-  const mimeType = imageData.mimeType || "image/png";
-
-  if (!imageBase64) {
-    throw new Error("Failed to extract generated image.");
-  }
-
-  return { imageBase64, mimeType };
 }
 
 /**
- * Generate image using OpenAI DALL-E 3
+ * Use Gemini Vision to pick the best image from candidates
  */
-async function generateWithOpenAI(prompt: string, apiKey: string): Promise<{ imageBase64: string; mimeType: string }> {
-  const response = await fetch("https://api.openai.com/v1/images/generations", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: "dall-e-3",
-      prompt,
-      n: 1,
-      size: "1024x1024",
-      quality: "standard",
-      response_format: "b64_json",
-    }),
+async function pickBestImage(
+  candidates: Array<{ url: string; base64: string; mimeType: string }>,
+  productDescription: string,
+  apiKey: string
+): Promise<number> {
+  if (candidates.length === 0) {
+    throw new Error("No candidate images to evaluate");
+  }
+
+  if (candidates.length === 1) {
+    return 0; // Only one option
+  }
+
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+  // Build the content with all images
+  const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [];
+
+  // Add the prompt
+  parts.push({
+    text: `You are an expert at selecting product photos for an e-commerce catalog.
+
+I need you to select the BEST image of: ${productDescription}
+
+Evaluate each image based on:
+1. Is it actually the correct product? (most important)
+2. Image quality and resolution
+3. Clean background (white or neutral preferred)
+4. Professional product photography style
+5. Shows the complete product clearly
+
+Here are ${candidates.length} candidate images:`
   });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    console.error("OpenAI DALL-E API error:", errorData);
+  // Add each image with a label
+  candidates.forEach((candidate, index) => {
+    parts.push({ text: `\n\nImage ${index + 1}:` });
+    parts.push({
+      inlineData: {
+        mimeType: candidate.mimeType,
+        data: candidate.base64,
+      },
+    });
+  });
 
-    if (response.status === 400) {
-      throw new Error("Unable to generate this image. Try a different product description.");
-    }
-    if (response.status === 429) {
-      throw new Error("Too many requests. Please wait a moment and try again.");
-    }
-    if (response.status === 401) {
-      throw new Error("Invalid OpenAI API key. Please check your settings.");
-    }
-    throw new Error("Failed to generate image with OpenAI DALL-E.");
+  parts.push({
+    text: `\n\nWhich image number (1-${candidates.length}) is the BEST match for "${productDescription}"?
+
+Reply with ONLY a single number. If none of the images are appropriate, reply with "0".`
+  });
+
+  const result = await model.generateContent(parts);
+  const response = result.response.text().trim();
+
+  // Extract the number from the response
+  const match = response.match(/\d+/);
+  if (!match) {
+    console.log("Vision response:", response);
+    return 0; // Default to first if can't parse
   }
 
-  const data = await response.json();
+  const selectedIndex = parseInt(match[0], 10) - 1; // Convert 1-indexed to 0-indexed
 
-  if (!data.data || data.data.length === 0) {
-    throw new Error("No image was generated. Try a different description.");
+  // Validate the index
+  if (selectedIndex < 0 || selectedIndex >= candidates.length) {
+    return 0; // Default to first if invalid
   }
 
-  const imageBase64 = data.data[0].b64_json;
-
-  if (!imageBase64) {
-    throw new Error("Failed to extract generated image.");
-  }
-
-  return { imageBase64, mimeType: "image/png" };
+  return selectedIndex;
 }
 
 export async function POST(request: NextRequest) {
@@ -175,33 +216,83 @@ export async function POST(request: NextRequest) {
 
     // Get user's AI settings
     const settings = await getAISettings(userId);
-    const { provider, apiKey } = getEffectiveImageSettings(settings);
+    const geminiApiKey = settings.apiKeys.gemini;
+    const cseId = settings.googleCseId;
 
-    if (!apiKey) {
-      const providerName = provider === "google" ? "Google (Gemini)" : "OpenAI";
+    if (!geminiApiKey) {
       return NextResponse.json(
-        {
-          error: `No API key configured for ${providerName}. Please add your API key in Settings > AI Settings.`
-        },
+        { error: "Google (Gemini) API key is required. Please add it in Settings > AI Settings." },
         { status: 400 }
       );
     }
 
-    const prompt = buildProductPrompt(productName, productType, options);
-
-    let result: GenerateImageResponse;
-
-    if (provider === "google") {
-      result = await generateWithGoogle(prompt, apiKey);
-    } else {
-      result = await generateWithOpenAI(prompt, apiKey);
+    if (!cseId) {
+      return NextResponse.json(
+        { error: "Google Custom Search Engine ID is required. Please add it in Settings > AI Settings." },
+        { status: 400 }
+      );
     }
+
+    // Build search query
+    const searchQuery = buildSearchQuery(productName, productType, options);
+    console.log("Image search query:", searchQuery);
+
+    // Search for candidate images
+    const imageUrls = await searchForImages(searchQuery, geminiApiKey, cseId, 5);
+    console.log(`Found ${imageUrls.length} candidate images`);
+
+    if (imageUrls.length === 0) {
+      return NextResponse.json(
+        { error: "No images found for this product. Try a different search term." },
+        { status: 404 }
+      );
+    }
+
+    // Fetch all candidate images
+    const candidates: Array<{ url: string; base64: string; mimeType: string }> = [];
+
+    for (const url of imageUrls) {
+      const imageData = await fetchImageAsBase64(url);
+      if (imageData) {
+        candidates.push({ url, ...imageData });
+      }
+    }
+
+    console.log(`Successfully fetched ${candidates.length} images`);
+
+    if (candidates.length === 0) {
+      return NextResponse.json(
+        { error: "Could not download any candidate images. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    // Build product description for vision evaluation
+    const productDescription = [
+      options?.brand,
+      options?.model,
+      productName,
+      productType === "coffee" ? "coffee bag" : productType === "grinder" ? "coffee grinder" : "coffee brewer",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    // Use Gemini Vision to pick the best image
+    const bestIndex = await pickBestImage(candidates, productDescription, geminiApiKey);
+    console.log(`Vision selected image ${bestIndex + 1} of ${candidates.length}`);
+
+    const bestImage = candidates[bestIndex];
+
+    const result: GenerateImageResponse = {
+      imageBase64: bestImage.base64,
+      mimeType: bestImage.mimeType,
+    };
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Error generating image:", error);
+    console.error("Error in image search pipeline:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to generate image" },
+      { error: error instanceof Error ? error.message : "Failed to find product image" },
       { status: 500 }
     );
   }

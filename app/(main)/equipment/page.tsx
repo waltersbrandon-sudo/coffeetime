@@ -249,8 +249,8 @@ function CollapsibleSection({ title, icon, count, defaultOpen = true, children }
 export default function EquipmentPage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { grinders, loading: grindersLoading } = useGrinders();
-  const { brewers, loading: brewersLoading } = useBrewers();
+  const { grinders, loading: grindersLoading, refetch: refetchGrinders } = useGrinders();
+  const { brewers, loading: brewersLoading, refetch: refetchBrewers } = useBrewers();
   const { stats } = useEquipmentStats();
 
   const [grinderFormOpen, setGrinderFormOpen] = useState(false);
@@ -637,6 +637,8 @@ export default function EquipmentPage() {
         onClose={() => {
           setGrinderFormOpen(false);
           setEditingGrinder(null);
+          // Refetch to ensure thumbnails are updated
+          refetchGrinders();
         }}
         existingGrinder={editingGrinder}
       />
@@ -646,6 +648,8 @@ export default function EquipmentPage() {
         onClose={() => {
           setBrewerFormOpen(false);
           setEditingBrewer(null);
+          // Refetch to ensure thumbnails are updated
+          refetchBrewers();
         }}
         existingBrewer={editingBrewer}
       />
