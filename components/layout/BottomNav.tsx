@@ -6,12 +6,11 @@ import { Home, Clock, BarChart3, Settings, Users, Package, Coffee } from "lucide
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/following", label: "Social", icon: Users },
+  { href: "/", label: "Log", icon: Home },
   { href: "/coffees", label: "Coffees", icon: Coffee },
   { href: "/equipment", label: "Equipment", icon: Package },
-  { href: "/history", label: "History", icon: Clock },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/insights", label: "Insights", icon: BarChart3 },
+  { href: "/following", label: "Social", icon: Users },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -20,7 +19,7 @@ export function BottomNav() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/50 bg-card/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-md items-center justify-around px-1">
+      <div className="mx-auto flex h-16 max-w-2xl lg:max-w-3xl items-center justify-around px-1">
         {navItems.map((item) => {
           const isActive = item.href === "/"
             ? pathname === "/"
