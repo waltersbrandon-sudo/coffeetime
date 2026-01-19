@@ -133,9 +133,14 @@ function ColorWheel({
   const innerRadius = radius * 0.45;
   const markerRadius = radius * 0.73;
 
-  // Adjusted saturation/lightness for dark wheel
-  const displaySat = isDark ? Math.max(10, saturation * 0.4) : saturation;
-  const displayLight = isDark ? Math.max(5, lightness * 0.25) : lightness;
+  // Adjusted saturation/lightness for dark wheel display
+  // But keep distinct colors for the scheme dots
+  const displaySat = isDark ? Math.max(15, saturation * 0.5) : saturation;
+  const displayLight = isDark ? Math.max(8, lightness * 0.3) : lightness;
+
+  // For scheme preview dots, use more visible colors even on dark wheel
+  const dotSat = isDark ? Math.max(25, saturation * 0.6) : saturation;
+  const dotLight = isDark ? Math.max(20, lightness * 0.5) : lightness;
 
   const handleWheelInteraction = (e: React.MouseEvent | React.TouchEvent) => {
     if (!wheelRef.current) return;
@@ -168,7 +173,8 @@ function ColorWheel({
 
   const schemeHues = generateSchemeHues(baseHue, scheme, hueMin, hueMax);
   const markerPositions = schemeHues.map((h) => ({ hue: h, ...getMarkerPosition(h) }));
-  const previewColors = schemeHues.map((h) => hslToHex(h, displaySat, displayLight));
+  // Use dotSat/dotLight for preview dots so they show distinct colors
+  const previewColors = schemeHues.map((h) => hslToHex(h, dotSat, dotLight));
 
   const generateConnectionPath = () => {
     if (markerPositions.length < 2) return "";
@@ -404,10 +410,10 @@ export function CoffeeColorPicker() {
 
   return (
     <div className="space-y-6">
-      {/* Dual Color Wheels - responsive layout */}
-      <div className="flex justify-between items-start">
+      {/* Dual Color Wheels - equal spacing layout */}
+      <div className="grid grid-cols-2 gap-4">
         {/* Accent Wheel - Left */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center justify-center">
           <ColorWheel
             size={wheelSize}
             baseHue={accentHue}
@@ -430,7 +436,7 @@ export function CoffeeColorPicker() {
         </div>
 
         {/* Background Wheel - Right */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center justify-center">
           <ColorWheel
             size={wheelSize}
             baseHue={bgHue}
