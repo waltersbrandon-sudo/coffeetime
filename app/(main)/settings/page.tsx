@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/context/AuthContext";
 import { signOutUser } from "@/lib/firebase/auth";
 import { useCurrentUserProfile } from "@/lib/hooks/useUserProfile";
 import { useToast } from "@/hooks/use-toast";
+import { InstallButton } from "@/components/pwa/InstallButton";
 
 function ChevronRightIcon({ className }: { className?: string }) {
   return (
@@ -239,6 +240,14 @@ export default function SettingsPage() {
         >
           Sign out
         </Button>
+      </section>
+
+      {/* App Section */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold text-muted-foreground">
+          App
+        </h2>
+        <InstallButton />
       </section>
 
       {/* AI Section */}
