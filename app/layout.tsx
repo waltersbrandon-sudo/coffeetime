@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/context/AuthContext";
 import { Toaster } from "@/components/ui/toaster";
+import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -46,6 +47,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased bg-background text-foreground`}>
         <AuthProvider>{children}</AuthProvider>
         <Toaster />
+        <InstallPrompt />
       </body>
     </html>
   );
